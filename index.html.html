@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商戦 - SHOSEN</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Three.js removed for offline compatibility -->
+</head>
+
+<body>
+    <!-- Title Screen -->
+    <div id="title-screen">
+        <div class="title-content">
+            <h1 class="main-title">商戦</h1>
+            <p class="sub-title">SHOSEN</p>
+            <div class="title-menu">
+                <button id="btn-title-start" class="action-btn title-btn">商戦スタート</button>
+                <button id="btn-title-tutorial" class="action-btn title-btn secondary">チュートリアル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorial-overlay" style="display: none;">
+        <div class="tutorial-box">
+            <h2 id="tutorial-title">Tutorial</h2>
+            <p id="tutorial-text">Welcome to Shosen.</p>
+        </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" style="display: none;">
+        <div class="screen-controls" style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+            <button class="control-btn btn-return-title-global">タイトルに戻る</button>
+        </div>
+        <div class="start-sidebar">
+            <h2>LEGEND</h2>
+            <div class="legend-section">
+                <h3>Attributes</h3>
+                <div class="legend-item"><span class="color-box" style="background:#4caf50;"></span> 安心 (Safety)</div>
+                <div class="legend-item"><span class="color-box" style="background:#e91e63;"></span> 快楽 (Pleasure)</div>
+                <div class="legend-item"><span class="color-box" style="background:#2196f3;"></span> 成長 (Growth)</div>
+                <div class="legend-item"><span class="color-box" style="background:#ff9800;"></span> 効率 (Efficiency)
+                </div>
+            </div>
+            <div class="legend-section">
+                <h3>Seasons</h3>
+                <div class="legend-item"><span class="icon">🌸</span> 春 (Spring)</div>
+                <div class="legend-item"><span class="icon">🎆</span> 夏 (Summer)</div>
+                <div class="legend-item"><span class="icon">🍁</span> 秋 (Autumn)</div>
+                <div class="legend-item"><span class="icon">❄️</span> 冬 (Winter)</div>
+            </div>
+        </div>
+        <div class="start-main">
+            <h1>STARTING HAND</h1>
+            <p>手札にする商品を <span class="highlight">5つ</span> 選んでください (<span id="selected-count">0</span> / 5)</p>
+            <div id="start-card-list" class="card-container start-cards">
+                <!-- Selectable cards injected by JS -->
+            </div>
+            <button id="btn-start-game" class="action-btn start-btn" disabled>商戦開始</button>
+        </div>
+    </div>
+
+    <!-- Mode Select Screen -->
+    <div id="mode-select-screen" style="display: none;">
+        <div class="screen-controls" style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+            <button class="control-btn btn-return-title-global">タイトルに戻る</button>
+        </div>
+        <div class="start-sidebar">
+            <h2>商戦モード選択</h2>
+            <div class="legend-section">
+                <p>挑戦するルールを選んでください。</p>
+            </div>
+        </div>
+        <div class="start-main" style="justify-content: center; gap: 40px;">
+            <button id="btn-mode-single" class="action-btn start-btn" style="width: 400px; height: 100px;">顧客1人
+                (通常)</button>
+            <button id="btn-mode-multi" class="action-btn start-btn" style="width: 400px; height: 100px;">顧客3人
+                (上級)</button>
+        </div>
+    </div>
+
+    <!-- Difficulty Select Screen -->
+    <div id="difficulty-select-screen" style="display: none;">
+        <div class="screen-controls" style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+            <button class="control-btn btn-return-title-global">タイトルに戻る</button>
+        </div>
+        <div class="start-sidebar">
+            <h2>難易度選択</h2>
+            <div class="legend-section">
+                <p>ライバルの強さを選んでください。</p>
+            </div>
+        </div>
+        <div class="start-main" style="justify-content: center; gap: 20px;">
+            <button id="btn-diff-easy" class="action-btn start-btn" style="width: 400px;">初級 (相手の手札公開・弱)</button>
+            <button id="btn-diff-normal" class="action-btn start-btn" style="width: 400px;">中級 (相手の手札公開・中)</button>
+            <button id="btn-diff-hard" class="action-btn start-btn" style="width: 400px;">上級 (相手の手札非公開・強)</button>
+        </div>
+    </div>
+
+    <div id="game-container" style="display: none;">
+        <!-- Header / Season Display -->
+        <header>
+            <div class="logo-area">
+                <h1>商戦</h1>
+                <div id="season-display" class="season-badge spring">
+                    <span id="season-text">春</span>
+                </div>
+            </div>
+            <div class="score-board">
+                <div class="score-unit player-unit">
+                    <div class="score-label">PlayerScore <span id="p-score-text">0/20</span></div>
+                    <div class="score-gauge-bg">
+                        <div id="p-score-gauge" class="score-gauge-fill"></div>
+                    </div>
+                </div>
+                <div class="score-unit rival-unit">
+                    <div class="score-label">RivalScore <span id="r-score-text">0/20</span></div>
+                    <div class="score-gauge-bg">
+                        <div id="r-score-gauge" class="score-gauge-fill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button id="btn-return-title-game" class="control-btn btn-return-title-global"
+                    style="margin-right: 10px;">タイトルに戻る</button>
+                <button id="btn-toggle-bgm" class="control-btn">BGM: OFF</button>
+            </div>
+        </header>
+
+        <!-- Main Battle Area -->
+        <main>
+            <!-- Player Area -->
+            <section class="player-area">
+                <h2>Player</h2>
+                <div class="stock-container">
+                    <div class="stock-indicator">Stock: <span id="p-stock">0</span></div>
+                    <div class="bonus-legend">
+                        <div class="legend-row"><span class="badge badge-season">★旬★</span> <span
+                                class="badge badge-match">◎マッチ◎</span> <span class="x4-label">x4!!</span></div>
+                        <div class="legend-row"><span class="badge badge-season">★旬★</span> or <span
+                                class="badge badge-match">◎マッチ◎</span> = x2</div>
+                    </div>
+                </div>
+                <div id="player-hand" class="card-container">
+                    <!-- Cards injected by JS -->
+                </div>
+                <div class="controls">
+                    <button id="btn-wait" class="action-btn secondary">待機 (貯める)</button>
+                </div>
+            </section>
+
+            <!-- Center Area (Customer) -->
+            <section class="center-area">
+                <div id="customers-wrapper" class="customers-wrapper">
+                    <!-- Dynamic Customer Units injected by JS -->
+                </div>
+                <!-- Message Area -->
+                <div id="message-area" class="message-box">
+                    バトル開始！
+                </div>
+            </section>
+
+            <!-- Rival Area -->
+            <section class="rival-area">
+                <h2>Rival</h2>
+                <div class="stock-indicator">Stock: <span id="r-stock">0</span></div>
+                <div id="rival-hand" class="card-container">
+                    <!-- Cards injected by JS (Back only?) or visible for debug -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Battle Log (Floating Right -> Top Center) -->
+        <aside id="battle-log">
+            <h3>Battle Log</h3>
+            <div id="log-content"></div>
+            <button id="btn-log-toggle" class="log-toggle-btn">Expand</button>
+        </aside>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/scene.js"></script>
+    <script src="js/game.js"></script>
+</body>
+
+</html>
